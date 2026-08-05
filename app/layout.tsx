@@ -27,7 +27,7 @@ export const metadata: Metadata = {
     siteName: "BearsWire",
     images: [
       {
-        url: "/og-image.png",
+        url: "https://bearswire.netlify.app/og-image.png",
         width: 1200,
         height: 630,
         alt: "BearsWire - Chicago Bears News & Videos",
