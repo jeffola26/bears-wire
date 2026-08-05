@@ -1,7 +1,7 @@
 name: Scrape Articles - Frequent (Daytime)
 on:
   schedule:
-    - cron: '*/15 14-22 * * *'  # Every 15 minutes, 2pm-10pm UTC (covers 9am-5pm Chicago)
+    - cron: '0,15,30,45 15-23 * * *'  # Every 15 minutes at :00, :15, :30, :45 (3pm-11pm UTC = 9am-5pm Chicago)
   workflow_dispatch:  # Allow manual triggering
 jobs:
   scrape:
