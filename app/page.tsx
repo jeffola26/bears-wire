@@ -32,7 +32,7 @@ function cleanRedditDescription(description: string): string {
   // Remove "[link] [comments]" and similar Reddit UI text
   return description
     .replace(/\[link\]\s*\[comments\]/gi, '')
-    .replace(/submitted by.*?\[link\]\s*\[comments\]/s, '')
+    .replace(/submitted by[\s\S]*?\[link\]\s*\[comments\]/g, '')
     .trim()
 }
 
