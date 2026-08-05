@@ -1,0 +1,16 @@
+name: Scrape Articles - Hourly (Nighttime)
+on:
+  schedule:
+    - cron: '0 22-8 * * *'  # Every hour, 10pm-8am UTC (covers 5pm-9am Chicago)
+    - cron: '0 0-2 * * *'   # Every hour, 12am-2am UTC (covers 7pm-9pm Chicago next day)
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Scrape articles
+        run: |
+          curl -X GET https://bears-wire.com/api/scrape
+      - name: Fetch OG images
+        run: |
+          curl -X GET https://bears-wire.com/api/scrape-images

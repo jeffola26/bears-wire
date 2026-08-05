@@ -1,0 +1,15 @@
+name: Scrape Articles - Frequent (Daytime)
+on:
+  schedule:
+    - cron: '*/15 9-22 * * *'  # Every 15 min, 9am-10pm UTC (covers 9am-5pm Chicago)
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Scrape articles
+        run: |
+          curl -X GET https://bears-wire.com/api/scrape
+      - name: Fetch OG images
+        run: |
+          curl -X GET https://bears-wire.com/api/scrape-images
