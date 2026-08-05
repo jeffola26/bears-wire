@@ -14,23 +14,11 @@ export default async () => {
     const imagesData = await imagesResponse.json()
     console.log('Images result:', imagesData.message || imagesData)
 
-    return {
-      statusCode: 200,
-      body: JSON.stringify({
-        success: true,
-        message: 'Scheduled scrape completed',
-        scrape: scrapeData,
-        images: imagesData,
-      }),
-    }
+    console.log('Scheduled scrape completed successfully')
+    return undefined
   } catch (error) {
     console.error('Scheduled scrape failed:', error)
-    return {
-      statusCode: 500,
-      body: JSON.stringify({
-        success: false,
-        error: error instanceof Error ? error.message : 'Unknown error',
-      }),
-    }
+    return undefined
   }
 }
+
