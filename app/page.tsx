@@ -150,7 +150,7 @@ export default function Home() {
       <header style={{ backgroundColor: '#0B162A' }}>
         <div className="max-w-7xl mx-auto px-4 py-4 flex justify-center">
           {/* Mobile: 112x157 (40% smaller), Tablet: 160x224, Desktop: 224x314 (20% smaller) */}
-          <div className="w-28 md:w-40 lg:w-56">
+          <div className="w-32 md:w-40 lg:w-56">
             <Image
               src="/bears-wire-logo2.png"
               alt="BearsWire"
