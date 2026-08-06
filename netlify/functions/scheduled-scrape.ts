@@ -1,5 +1,3 @@
-import { Config } from '@netlify/functions'
-
 export default async () => {
   const siteUrl = process.env.NETLIFY_SITE_URL || 'https://bearswire.netlify.app'
 
@@ -22,6 +20,5 @@ export default async () => {
   }
 }
 
-export const config: Config = {}
 
 
