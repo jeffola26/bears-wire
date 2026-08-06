@@ -265,11 +265,13 @@ export default function Home() {
                   style={{ backgroundColor: '#1a2847', borderLeftColor: '#FF6600', borderLeftWidth: '4px' }}
                 >
                   {/* Image */}
-                  <div className="h-40 overflow-hidden bg-gray-800">
+                  <div className="aspect-video bg-gray-800 overflow-hidden">
                     <img
                       src={imageUrl}
                       alt={article.title}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                      className={`w-full h-full group-hover:scale-105 transition-transform duration-300 ${
+                        article.content_type === 'video' ? 'object-cover' : 'object-contain'
+                      }`}
                     />
                   </div>
 
