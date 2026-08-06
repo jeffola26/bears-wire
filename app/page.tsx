@@ -149,13 +149,17 @@ export default function Home() {
       {/* Header */}
       <header style={{ backgroundColor: '#0B162A' }}>
         <div className="max-w-7xl mx-auto px-4 py-4 flex justify-center">
-          <Image
-            src="/bears-wire-logo.png"
-            alt="BearsWire"
-            width={330}
-            height={265}
-            priority
-          />
+          {/* Mobile: 112x157 (40% smaller), Tablet: 160x224, Desktop: 224x314 (20% smaller) */}
+          <div className="w-28 md:w-40 lg:w-56">
+            <Image
+              src="/bears-wire-logo2.png"
+              alt="BearsWire"
+              width={280}
+              height={392}
+              priority
+              style={{ width: '100%', height: 'auto' }}
+            />
+          </div>
         </div>
       </header>
 
@@ -250,60 +254,159 @@ export default function Home() {
             <p className="text-gray-400">No content found with selected filters.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredArticles.map((article) => {
-              const reddit = isRedditPost(article.source)
-              const imageUrl = reddit ? '/bears-reddit.png' : (article.thumbnail || getPlaceholder(article.id))
+          <>
+            {activeTab === 'video' ? (
+              // Videos: 2-column feed on desktop, single-column feed on mobile
+              <>
+                {/* Desktop: 2-column feed */}
+                <div className="hidden lg:grid grid-cols-2 gap-6">
+                  {filteredArticles.map((article) => {
+                    const reddit = isRedditPost(article.source)
+                    const imageUrl = reddit ? '/bears-reddit.png' : (article.thumbnail || getPlaceholder(article.id))
 
-              return (
-                <a
-                  key={article.id}
-                  href={article.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="group rounded-lg overflow-hidden shadow hover:shadow-2xl transition-all duration-300 block"
-                  style={{ backgroundColor: '#1a2847', borderLeftColor: '#FF6600', borderLeftWidth: '4px' }}
-                >
-                  {/* Image */}
-                  <div className="aspect-video bg-gray-800 overflow-hidden">
-                    <img
-                      src={imageUrl}
-                      alt={article.title}
-                      className={`w-full h-full group-hover:scale-105 transition-transform duration-300 ${
-                        article.content_type === 'video' ? 'object-cover' : 'object-contain'
-                      }`}
-                    />
-                  </div>
-
-                  {/* Content */}
-                  <div className="p-6">
-                    <div className="flex items-start justify-between mb-3 gap-2">
-                      <span
-                        className="text-xs font-semibold px-3 py-1 rounded text-white flex-shrink-0"
-                        style={{ backgroundColor: '#FF6600' }}
+                    return (
+                      <a
+                        key={article.id}
+                        href={article.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex gap-4 p-4 rounded hover:bg-opacity-80 transition-all duration-200 group"
+                        style={{ backgroundColor: '#1a2847', borderLeftColor: '#FF6600', borderLeftWidth: '4px' }}
                       >
-                        {article.source}
-                      </span>
-                      <time className="text-xs text-gray-400 flex-shrink-0" dateTime={article.date_published}>
-                        {new Date(article.date_published).toLocaleDateString('en-US', {
-                          month: 'short',
-                          day: 'numeric',
-                        })}
-                      </time>
-                    </div>
+                        <div className="flex-shrink-0 w-24 aspect-video rounded overflow-hidden bg-gray-800">
+                          <img
+                            src={imageUrl}
+                            alt={article.title}
+                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                          />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center justify-between gap-2 mb-2">
+                            <span
+                              className="text-xs font-semibold px-2 py-1 rounded text-white flex-shrink-0"
+                              style={{ backgroundColor: '#FF6600' }}
+                            >
+                              {article.source}
+                            </span>
+                            <time className="text-xs text-gray-400 flex-shrink-0" dateTime={article.date_published}>
+                              {new Date(article.date_published).toLocaleDateString('en-US', {
+                                month: 'short',
+                                day: 'numeric',
+                              })}
+                            </time>
+                          </div>
+                          <h3 className="font-bold text-sm mb-1 group-hover:text-orange-400 transition-colors text-white line-clamp-2">
+                            {decodeHTMLEntities(article.title)}
+                          </h3>
+                          <p className="text-xs text-gray-400 line-clamp-1">
+                            {article.description}
+                          </p>
+                        </div>
+                      </a>
+                    )
+                  })}
+                </div>
 
-                    <h3 className="font-bold text-lg mb-3 group-hover:text-orange-400 transition-colors text-white leading-tight">
-                      {decodeHTMLEntities(article.title)}
-                    </h3>
+                {/* Mobile: Feed */}
+                <div className="lg:hidden space-y-3">
+                  {filteredArticles.map((article) => {
+                    const reddit = isRedditPost(article.source)
+                    const imageUrl = reddit ? '/bears-reddit.png' : (article.thumbnail || getPlaceholder(article.id))
 
-                    <p className="text-gray-300 text-sm line-clamp-2">
-                      {isRedditPost(article.source) ? cleanRedditDescription(article.description) : article.description}
-                    </p>
-                  </div>
-                </a>
-              )
-            })}
-          </div>
+                    return (
+                      <a
+                        key={article.id}
+                        href={article.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex gap-4 p-4 rounded hover:bg-opacity-80 transition-all duration-200 group"
+                        style={{ backgroundColor: '#1a2847', borderLeftColor: '#FF6600', borderLeftWidth: '4px' }}
+                      >
+                        <div className="flex-shrink-0 w-24 aspect-video rounded overflow-hidden bg-gray-800">
+                          <img
+                            src={imageUrl}
+                            alt={article.title}
+                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                          />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center justify-between gap-2 mb-2">
+                            <span
+                              className="text-xs font-semibold px-2 py-1 rounded text-white flex-shrink-0"
+                              style={{ backgroundColor: '#FF6600' }}
+                            >
+                              {article.source}
+                            </span>
+                            <time className="text-xs text-gray-400 flex-shrink-0" dateTime={article.date_published}>
+                              {new Date(article.date_published).toLocaleDateString('en-US', {
+                                month: 'short',
+                                day: 'numeric',
+                              })}
+                            </time>
+                          </div>
+                          <h3 className="font-bold text-sm mb-1 group-hover:text-orange-400 transition-colors text-white line-clamp-2">
+                            {decodeHTMLEntities(article.title)}
+                          </h3>
+                          <p className="text-xs text-gray-400 line-clamp-1">
+                            {article.description}
+                          </p>
+                        </div>
+                      </a>
+                    )
+                  })}
+                </div>
+              </>
+            ) : (
+              // News: Always feed layout
+              <div className="space-y-3">
+                {filteredArticles.map((article) => {
+                  const reddit = isRedditPost(article.source)
+                  const imageUrl = reddit ? '/bears-reddit.png' : (article.thumbnail || getPlaceholder(article.id))
+
+                  return (
+                    <a
+                      key={article.id}
+                      href={article.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex gap-4 p-4 rounded hover:bg-opacity-80 transition-all duration-200 group"
+                      style={{ backgroundColor: '#1a2847', borderLeftColor: '#FF6600', borderLeftWidth: '4px' }}
+                    >
+                      <div className="flex-shrink-0 w-24 aspect-video rounded overflow-hidden bg-gray-800">
+                        <img
+                          src={imageUrl}
+                          alt={article.title}
+                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                        />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between gap-2 mb-2">
+                          <span
+                            className="text-xs font-semibold px-2 py-1 rounded text-white flex-shrink-0"
+                            style={{ backgroundColor: '#FF6600' }}
+                          >
+                            {article.source}
+                          </span>
+                          <time className="text-xs text-gray-400 flex-shrink-0" dateTime={article.date_published}>
+                            {new Date(article.date_published).toLocaleDateString('en-US', {
+                              month: 'short',
+                              day: 'numeric',
+                            })}
+                          </time>
+                        </div>
+                        <h3 className="font-bold text-sm mb-1 group-hover:text-orange-400 transition-colors text-white line-clamp-2">
+                          {decodeHTMLEntities(article.title)}
+                        </h3>
+                        <p className="text-xs text-gray-400 line-clamp-1">
+                          {isRedditPost(article.source) ? cleanRedditDescription(article.description) : article.description}
+                        </p>
+                      </div>
+                    </a>
+                  )
+                })}
+              </div>
+            )}
+          </>
         )}
       </main>
 
