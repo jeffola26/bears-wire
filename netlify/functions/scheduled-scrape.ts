@@ -1,3 +1,5 @@
+import { Config } from '@netlify/functions'
+
 export default async () => {
   const siteUrl = process.env.NETLIFY_SITE_URL || 'https://bearswire.netlify.app'
 
@@ -15,10 +17,11 @@ export default async () => {
     console.log('Images result:', imagesData.message || imagesData)
 
     console.log('Scheduled scrape completed successfully')
-    return undefined
   } catch (error) {
     console.error('Scheduled scrape failed:', error)
-    return undefined
   }
 }
+
+export const config: Config = {}
+
 
