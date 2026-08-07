@@ -50,44 +50,47 @@ export default function Home() {
   const [selectedSources, setSelectedSources] = useState<string[]>([])
   const [showSourceFilter, setShowSourceFilter] = useState(false)
 
-  // Load articles and preferences on mount
   useEffect(() => {
-    async function loadAll() {
-      try {
-        const { data, error } = await supabase
-          .from('articles')
-          .select('*')
-          .order('date_published', { ascending: false })
-          .limit(100)
-
-        if (error) throw error
-        
-        const articlesData = data || []
-        setArticles(articlesData)
-        
-        // Get unique sources from articles
-        const sources = Array.from(new Set(articlesData.map(a => a.source))).sort()
-        setAllSources(sources)
-        
-        // Load enabled sources from database
-        const prefResponse = await fetch('/api/user-preferences')
-        const prefs = await prefResponse.json()
-        
-        if (prefs.success && prefs.enabledSources && prefs.enabledSources.length > 0) {
-          setSelectedSources(prefs.enabledSources)
-        } else {
-          // Fallback to all sources if no preferences saved
-          setSelectedSources(sources)
-        }
-      } catch (error) {
-        console.error('Error loading data:', error)
-      } finally {
-        setLoading(false)
-      }
-    }
-    
-    loadAll()
+    fetchArticles()
   }, [])
+
+  // Load source filter from localStorage on mount
+  useEffect(() => {
+    const saved = localStorage.getItem('bearswire-source-filter')
+    if (saved) {
+      setSelectedSources(JSON.parse(saved))
+    }
+  }, [])
+
+  // Save source filter to localStorage when it changes
+  useEffect(() => {
+    if (selectedSources.length > 0) {
+      localStorage.setItem('bearswire-source-filter', JSON.stringify(selectedSources))
+    }
+  }, [selectedSources])
+
+  async function fetchArticles() {
+    try {
+      const { data, error } = await supabase
+        .from('articles')
+        .select('*')
+        .order('date_published', { ascending: false })
+        .limit(100)
+
+      if (error) throw error
+      
+      const articlesData = data || []
+      setArticles(articlesData)
+      
+      // Get unique sources
+      const sources = Array.from(new Set(articlesData.map(a => a.source))).sort()
+      setAllSources(sources)
+    } catch (error) {
+      console.error('Error fetching articles:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   // Close source filter when clicking outside
   useEffect(() => {
@@ -120,38 +123,19 @@ export default function Home() {
     { id: 'video', label: 'Videos' },
   ]
 
-  const toggleSource = async (source: string) => {
-    const updated = selectedSources.includes(source)
-      ? selectedSources.filter(s => s !== source)
-      : [...selectedSources, source]
-    
-    setSelectedSources(updated)
-    
-    // Save to database
-    try {
-      await fetch('/api/user-preferences', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ enabledSources: updated }),
-      })
-    } catch (error) {
-      console.error('Error saving preferences:', error)
-    }
+  const toggleSource = (source: string) => {
+    setSelectedSources(prev =>
+      prev.includes(source)
+        ? prev.filter(s => s !== source)
+        : [...prev, source]
+    )
   }
 
-  const toggleAllSources = async () => {
-    const updated = selectedSources.length === tabSources.length ? [] : tabSources
-    setSelectedSources(updated)
-    
-    // Save to database
-    try {
-      await fetch('/api/user-preferences', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ enabledSources: updated }),
-      })
-    } catch (error) {
-      console.error('Error saving preferences:', error)
+  const toggleAllSources = () => {
+    if (selectedSources.length === tabSources.length) {
+      setSelectedSources([])
+    } else {
+      setSelectedSources(tabSources)
     }
   }
 
