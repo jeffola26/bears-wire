@@ -50,8 +50,43 @@ export default function Home() {
   const [selectedSources, setSelectedSources] = useState<string[]>([])
   const [showSourceFilter, setShowSourceFilter] = useState(false)
 
+  // Load articles and preferences on mount
   useEffect(() => {
-    fetchArticles()
+    async function loadAll() {
+      try {
+        const { data, error } = await supabase
+          .from('articles')
+          .select('*')
+          .order('date_published', { ascending: false })
+          .limit(100)
+
+        if (error) throw error
+        
+        const articlesData = data || []
+        setArticles(articlesData)
+        
+        // Get unique sources from articles
+        const sources = Array.from(new Set(articlesData.map(a => a.source))).sort()
+        setAllSources(sources)
+        
+        // Load enabled sources from database
+        const prefResponse = await fetch('/api/user-preferences')
+        const prefs = await prefResponse.json()
+        
+        if (prefs.success && prefs.enabledSources && prefs.enabledSources.length > 0) {
+          setSelectedSources(prefs.enabledSources)
+        } else {
+          // Fallback to all sources if no preferences saved
+          setSelectedSources(sources)
+        }
+      } catch (error) {
+        console.error('Error loading data:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+    
+    loadAll()
   }, [])
 
   // Close source filter when clicking outside
@@ -68,45 +103,6 @@ export default function Home() {
       return () => document.removeEventListener('mousedown', handleClickOutside)
     }
   }, [showSourceFilter])
-
-  // Load source filter from database on mount
-  useEffect(() => {
-    async function loadPreferences() {
-      try {
-        const response = await fetch('/api/user-preferences')
-        const data = await response.json()
-        if (data.success && data.enabledSources) {
-          setSelectedSources(data.enabledSources)
-        }
-      } catch (error) {
-        console.error('Error loading preferences:', error)
-      }
-    }
-    loadPreferences()
-  }, [])
-
-  async function fetchArticles() {
-    try {
-      const { data, error } = await supabase
-        .from('articles')
-        .select('*')
-        .order('date_published', { ascending: false })
-        .limit(100)
-
-      if (error) throw error
-      
-      const articlesData = data || []
-      setArticles(articlesData)
-      
-      // Get unique sources
-      const sources = Array.from(new Set(articlesData.map(a => a.source))).sort()
-      setAllSources(sources)
-    } catch (error) {
-      console.error('Error fetching articles:', error)
-    } finally {
-      setLoading(false)
-    }
-  }
 
   const filteredArticles = articles.filter(
     article => article.content_type === activeTab && selectedSources.includes(article.source)
