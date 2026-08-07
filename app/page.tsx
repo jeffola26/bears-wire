@@ -165,18 +165,8 @@ export default function Home() {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 py-6">
-        {/* Hero Section */}
-        <div className="mb-6">
-          <h2 className="text-4xl font-bold mb-3" style={{ color: '#FF6600' }}>
-            Latest Bears News
-          </h2>
-          <p className="text-gray-300 text-lg">
-            Your go-to source for Chicago Bears coverage.
-          </p>
-        </div>
-
         {/* Tabs and Filter */}
-        <div className="flex items-center justify-between mb-8 gap-4">
+        <div className="sticky top-0 z-50 flex items-center justify-between mb-8 gap-4 py-6" style={{ backgroundColor: '#0B162A' }}>
           <div className="flex gap-3 border-b flex-1" style={{ borderColor: '#FF6600', borderBottomWidth: '2px' }}>
             {tabConfig.map((tab) => (
               <button
