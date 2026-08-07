@@ -76,6 +76,11 @@ export default function Home() {
     }
   }, [allSources, selectedSources.length])
 
+  // Scroll to top when tab changes
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [activeTab])
+
   async function fetchArticles() {
     try {
       const { data, error } = await supabase
