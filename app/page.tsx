@@ -101,11 +101,6 @@ export default function Home() {
       // Get unique sources
       const sources = Array.from(new Set(articlesData.map(a => a.source))).sort()
       setAllSources(sources)
-      
-      // If no filter saved, enable all sources by default
-      if (selectedSources.length === 0) {
-        setSelectedSources(sources)
-      }
     } catch (error) {
       console.error('Error fetching articles:', error)
     } finally {
