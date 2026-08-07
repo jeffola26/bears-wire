@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import Image from 'next/image'
 
@@ -49,7 +49,6 @@ export default function Home() {
   const [allSources, setAllSources] = useState<string[]>([])
   const [selectedSources, setSelectedSources] = useState<string[]>([])
   const [showSourceFilter, setShowSourceFilter] = useState(false)
-  const stickyHeaderRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     fetchArticles()
@@ -76,13 +75,6 @@ export default function Home() {
       setSelectedSources(allSources)
     }
   }, [allSources, selectedSources.length])
-
-  // Scroll to sticky header when tab changes
-  useEffect(() => {
-    if (stickyHeaderRef.current) {
-      stickyHeaderRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' })
-    }
-  }, [activeTab])
 
   async function fetchArticles() {
     try {
@@ -176,7 +168,7 @@ export default function Home() {
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 py-6">
         {/* Tabs and Filter */}
-        <div className="sticky top-0 z-50 flex items-center justify-between mb-8 gap-4 py-6" style={{ backgroundColor: '#0B162A' }} ref={stickyHeaderRef}>
+        <div className="sticky top-0 z-50 flex items-center justify-between mb-8 gap-4 py-6" style={{ backgroundColor: '#0B162A' }}>
           <div className="flex gap-3 border-b flex-1" style={{ borderColor: '#FF6600', borderBottomWidth: '2px' }}>
             {tabConfig.map((tab) => (
               <button
