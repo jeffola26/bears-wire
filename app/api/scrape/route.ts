@@ -17,6 +17,8 @@ const RSS_FEEDS: Feed[] = [
   { url: 'https://www.windycitygridiron.com/rss/index.xml', contentType: 'news' },
   { url: 'http://bearingthenews.com/feed/', contentType: 'news' },
   { url: 'https://www.reddit.com/r/chibears/.rss', contentType: 'news' },
+  { url: 'https://beargoggleson.com/feed/', contentType: 'news' },
+  { url: 'https://bleachernation.com/bears/feed', contentType: 'news' },
   
   // YouTube TIER 1: All uploads (no filter)
   { url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCP0Cdc6moLMyDJiO0s-yhbQ', contentType: 'video', channelName: 'Chicago Bears Official' },
@@ -147,8 +149,24 @@ export async function GET() {
 
     logs.push('Starting scrape at ' + new Date().toISOString())
 
+    // Fetch enabled sources from preferences
+    let enabledSources: string[] = []
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/user-preferences`)
+      const prefs = await response.json()
+      enabledSources = prefs.enabledSources || []
+      logs.push(`Loaded enabled sources: ${enabledSources.length} sources`)
+    } catch (error) {
+      logs.push(`Warning: Could not fetch preferences, using all sources`)
+      enabledSources = RSS_FEEDS.map(f => f.url)
+    }
+
+    // Filter feeds to only enabled ones
+    const activeFeeds = RSS_FEEDS.filter(feed => enabledSources.includes(feed.url))
+    logs.push(`Processing ${activeFeeds.length} active feeds (${RSS_FEEDS.length - activeFeeds.length} disabled)`)
+
     // Fetch all feeds
-    for (const feed of RSS_FEEDS) {
+    for (const feed of activeFeeds) {
       try {
         logs.push(`Fetching ${feed.contentType} feed: ${feed.url}`)
         console.log(`Fetching ${feed.contentType} feed: ${feed.url}`)
