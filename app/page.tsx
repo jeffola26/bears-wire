@@ -69,6 +69,13 @@ export default function Home() {
     }
   }, [selectedSources])
 
+  // Default to all sources if none selected and articles are loaded
+  useEffect(() => {
+    if (selectedSources.length === 0 && allSources.length > 0) {
+      setSelectedSources(allSources)
+    }
+  }, [allSources, selectedSources.length])
+
   async function fetchArticles() {
     try {
       const { data, error } = await supabase
