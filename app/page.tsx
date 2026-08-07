@@ -69,20 +69,21 @@ export default function Home() {
     }
   }, [showSourceFilter])
 
-  // Load source filter from localStorage on mount
+  // Load source filter from database on mount
   useEffect(() => {
-    const saved = localStorage.getItem('bearswire-source-filter')
-    if (saved) {
-      setSelectedSources(JSON.parse(saved))
+    async function loadPreferences() {
+      try {
+        const response = await fetch('/api/user-preferences')
+        const data = await response.json()
+        if (data.success && data.enabledSources) {
+          setSelectedSources(data.enabledSources)
+        }
+      } catch (error) {
+        console.error('Error loading preferences:', error)
+      }
     }
+    loadPreferences()
   }, [])
-
-  // Save source filter to localStorage when it changes
-  useEffect(() => {
-    if (selectedSources.length > 0) {
-      localStorage.setItem('bearswire-source-filter', JSON.stringify(selectedSources))
-    }
-  }, [selectedSources])
 
   async function fetchArticles() {
     try {
@@ -128,19 +129,38 @@ export default function Home() {
     { id: 'video', label: 'Videos' },
   ]
 
-  const toggleSource = (source: string) => {
-    setSelectedSources(prev =>
-      prev.includes(source)
-        ? prev.filter(s => s !== source)
-        : [...prev, source]
-    )
+  const toggleSource = async (source: string) => {
+    const updated = selectedSources.includes(source)
+      ? selectedSources.filter(s => s !== source)
+      : [...selectedSources, source]
+    
+    setSelectedSources(updated)
+    
+    // Save to database
+    try {
+      await fetch('/api/user-preferences', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ enabledSources: updated }),
+      })
+    } catch (error) {
+      console.error('Error saving preferences:', error)
+    }
   }
 
-  const toggleAllSources = () => {
-    if (selectedSources.length === tabSources.length) {
-      setSelectedSources([])
-    } else {
-      setSelectedSources(tabSources)
+  const toggleAllSources = async () => {
+    const updated = selectedSources.length === tabSources.length ? [] : tabSources
+    setSelectedSources(updated)
+    
+    // Save to database
+    try {
+      await fetch('/api/user-preferences', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ enabledSources: updated }),
+      })
+    } catch (error) {
+      console.error('Error saving preferences:', error)
     }
   }
 
