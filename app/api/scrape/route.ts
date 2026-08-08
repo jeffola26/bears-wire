@@ -142,6 +142,24 @@ function extractImageFromRSSItem(item: any, url: string): string | null {
   return null
 }
 
+function cleanDescription(html: string): string {
+  // Strip HTML tags
+  let text = html.replace(/<[^>]*>/g, '')
+  // Decode HTML entities
+  text = text
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&quot;/g, '"')
+    .replace(/&apos;/g, "'")
+    .replace(/&amp;/g, '&')
+  // Take first sentence (up to first period, question mark, or exclamation)
+  const match = text.match(/^[^.!?]*[.!?]/);
+  if (match) {
+    return match[0].trim()
+  }
+  // Fallback: take first 200 characters
+  return text.substring(0, 200).trim()
+}
+
 export async function GET() {
   try {
     let addedCount = 0
@@ -188,8 +206,8 @@ export async function GET() {
           
           // Extract description based on feed's descriptionField preference
           let description = ''
-          if (feed.descriptionField === 'content:encoded') {
-            description = item['content:encoded'] ? item['content:encoded'].substring(0, 200) : ''
+          if (feed.descriptionField === 'content:encoded' && item['content:encoded']) {
+            description = cleanDescription(item['content:encoded'])
           }
           // Fallback to default extraction
           if (!description) {
