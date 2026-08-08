@@ -198,7 +198,7 @@ export default function Home() {
     <div className="min-h-screen" style={{ backgroundColor: '#0B162A' }}>
       {/* Header */}
       <header style={{ backgroundColor: '#0B162A' }}>
-        <div className="max-w-7xl mx-auto px-4 py-4 flex justify-center">
+        <div className="max-w-7xl mx-auto px-4 py-2 flex justify-center">
           {/* Mobile: 112x157 (40% smaller), Tablet: 160x224, Desktop: 224x314 (20% smaller) */}
           <div className="w-32 md:w-40 lg:w-56">
             <Image
@@ -214,9 +214,9 @@ export default function Home() {
       </header>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 py-6">
+      <main className="max-w-7xl mx-auto px-4 py-0">
         {/* Tabs and Filter */}
-        <div className="sticky top-0 z-50 flex items-center justify-between mb-8 gap-4 py-6" style={{ backgroundColor: '#0B162A' }}>
+        <div className="sticky top-0 z-50 flex items-center justify-between mb-4 gap-4 py-6" style={{ backgroundColor: '#0B162A' }}>
           <div className="flex gap-3 border-b flex-1" style={{ borderColor: '#FF6600', borderBottomWidth: '2px' }}>
             {tabConfig.map((tab) => (
               <button
@@ -452,7 +452,20 @@ export default function Home() {
 
       {/* Footer */}
       <footer className="mt-16" style={{ borderTopColor: '#FF6600', borderTopWidth: '2px' }}>
-        <div className="max-w-7xl mx-auto px-4 py-8 text-center text-gray-400 text-sm">
+        <div className="max-w-7xl mx-auto px-4 py-8 text-center text-gray-400 text-sm flex flex-col items-center">
+          <button 
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+            className="w-32 md:w-48 mb-4 cursor-pointer opacity-100 hover:opacity-80 transition-opacity"
+            aria-label="Scroll to top"
+          >
+            <Image
+              src="/footer.png"
+              alt="BearsWire Footer"
+              width={455}
+              height={607}
+              style={{ width: '100%', height: 'auto' }}
+            />
+          </button>
           <p>&copy; 2026 BearsWire</p>
           <p className="mt-2">Another <a href="https://wolfpackdesigns.net" target="_blank" rel="noopener noreferrer" className="text-orange-500 hover:text-orange-400 transition-colors">Wolfpack Designs</a> project</p>
         </div>
