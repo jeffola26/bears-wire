@@ -79,7 +79,7 @@ export default function Home() {
   }, [selectedSourcesNews, activeTab])
 
   useEffect(() => {
-    if (activeTab === 'videos' && selectedSourcesVideos.length > 0) {
+    if (activeTab === 'video' && selectedSourcesVideos.length > 0) {
       localStorage.setItem('bearswire-source-filter-videos', JSON.stringify(selectedSourcesVideos))
     }
   }, [selectedSourcesVideos, activeTab])
