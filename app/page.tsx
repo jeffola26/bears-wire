@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { supabase } from '@/lib/supabase'
 import Image from 'next/image'
 
@@ -49,6 +49,7 @@ export default function Home() {
   const [allSources, setAllSources] = useState<string[]>([])
   const [selectedSources, setSelectedSources] = useState<string[]>([])
   const [showSourceFilter, setShowSourceFilter] = useState(false)
+  const isInitialMount = useRef(true)
 
   useEffect(() => {
     fetchArticles()
@@ -75,6 +76,17 @@ export default function Home() {
       setSelectedSources(allSources)
     }
   }, [allSources, selectedSources.length])
+
+  // Scroll to sticky header when tab changes (skip on initial load)
+  useEffect(() => {
+    if (isInitialMount.current) {
+      isInitialMount.current = false
+      return
+    }
+    // Desktop: 350px, Mobile: 280px
+    const scrollPos = window.innerWidth < 768 ? 280 : 350
+    window.scrollTo({ top: scrollPos, behavior: 'instant' })
+  }, [activeTab])
 
   async function fetchArticles() {
     try {
