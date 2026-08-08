@@ -9,12 +9,13 @@ interface Feed {
   contentType: 'news' | 'video' | 'photo'
   channelName?: string
   filterKeywords?: string[]
+  descriptionField?: 'contentSnippet' | 'summary' | 'content:encoded'
 }
 
 const RSS_FEEDS: Feed[] = [
   // News feeds only
   { url: 'https://www.chicagobears.com/rss/news', contentType: 'news' },
-  { url: 'https://www.windycitygridiron.com/rss/index.xml', contentType: 'news' },
+  { url: 'https://www.windycitygridiron.com/rss/index.xml', contentType: 'news', descriptionField: 'content:encoded' },
   { url: 'http://bearingthenews.com/feed/', contentType: 'news' },
   { url: 'https://www.reddit.com/r/chibears/.rss', contentType: 'news' },
   { url: 'https://beargoggleson.com/feed/', contentType: 'news' },
@@ -184,7 +185,17 @@ export async function GET() {
 
           const url = item.link
           const title = item.title
-          const description = item.contentSnippet || item.summary || ''
+          
+          // Extract description based on feed's descriptionField preference
+          let description = ''
+          if (feed.descriptionField === 'content:encoded') {
+            description = item['content:encoded'] ? item['content:encoded'].substring(0, 200) : ''
+          }
+          // Fallback to default extraction
+          if (!description) {
+            description = item.contentSnippet || item.summary || ''
+          }
+          
           const datePublished = item.pubDate ? new Date(item.pubDate) : new Date()
 
           // Aggressive YouTube shorts filtering
