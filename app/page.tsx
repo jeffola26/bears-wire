@@ -47,9 +47,13 @@ export default function Home() {
   const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState<ContentType>('news')
   const [allSources, setAllSources] = useState<string[]>([])
-  const [selectedSources, setSelectedSources] = useState<string[]>([])
+  const [selectedSourcesNews, setSelectedSourcesNews] = useState<string[]>([])
+  const [selectedSourcesVideos, setSelectedSourcesVideos] = useState<string[]>([])
   const [showSourceFilter, setShowSourceFilter] = useState(false)
   const isInitialMount = useRef(true)
+
+  // Get selected sources for current tab (computed value only)
+  const selectedSources = activeTab === 'news' ? selectedSourcesNews : selectedSourcesVideos
 
   useEffect(() => {
     fetchArticles()
@@ -57,25 +61,41 @@ export default function Home() {
 
   // Load source filter from localStorage on mount
   useEffect(() => {
-    const saved = localStorage.getItem('bearswire-source-filter')
-    if (saved) {
-      setSelectedSources(JSON.parse(saved))
+    const savedNews = localStorage.getItem('bearswire-source-filter-news')
+    const savedVideos = localStorage.getItem('bearswire-source-filter-videos')
+    if (savedNews) {
+      setSelectedSourcesNews(JSON.parse(savedNews))
+    }
+    if (savedVideos) {
+      setSelectedSourcesVideos(JSON.parse(savedVideos))
     }
   }, [])
 
   // Save source filter to localStorage when it changes
   useEffect(() => {
-    if (selectedSources.length > 0) {
-      localStorage.setItem('bearswire-source-filter', JSON.stringify(selectedSources))
+    if (activeTab === 'news' && selectedSourcesNews.length > 0) {
+      localStorage.setItem('bearswire-source-filter-news', JSON.stringify(selectedSourcesNews))
     }
-  }, [selectedSources])
+  }, [selectedSourcesNews, activeTab])
 
-  // Default to all sources if none selected and articles are loaded
   useEffect(() => {
-    if (selectedSources.length === 0 && allSources.length > 0) {
-      setSelectedSources(allSources)
+    if (activeTab === 'videos' && selectedSourcesVideos.length > 0) {
+      localStorage.setItem('bearswire-source-filter-videos', JSON.stringify(selectedSourcesVideos))
     }
-  }, [allSources, selectedSources.length])
+  }, [selectedSourcesVideos, activeTab])
+
+  // Default to all sources if none selected and articles are loaded (per tab)
+  useEffect(() => {
+    if (selectedSourcesNews.length === 0 && allSources.length > 0) {
+      setSelectedSourcesNews(allSources)
+    }
+  }, [allSources, selectedSourcesNews.length])
+
+  useEffect(() => {
+    if (selectedSourcesVideos.length === 0 && allSources.length > 0) {
+      setSelectedSourcesVideos(allSources)
+    }
+  }, [allSources, selectedSourcesVideos.length])
 
   // Scroll to sticky header when tab changes (skip on initial load)
   useEffect(() => {
@@ -143,18 +163,34 @@ export default function Home() {
   ]
 
   const toggleSource = (source: string) => {
-    setSelectedSources(prev =>
-      prev.includes(source)
-        ? prev.filter(s => s !== source)
-        : [...prev, source]
-    )
+    if (activeTab === 'news') {
+      setSelectedSourcesNews(prev =>
+        prev.includes(source)
+          ? prev.filter(s => s !== source)
+          : [...prev, source]
+      )
+    } else {
+      setSelectedSourcesVideos(prev =>
+        prev.includes(source)
+          ? prev.filter(s => s !== source)
+          : [...prev, source]
+      )
+    }
   }
 
   const toggleAllSources = () => {
-    if (selectedSources.length === tabSources.length) {
-      setSelectedSources([])
+    if (activeTab === 'news') {
+      if (selectedSourcesNews.length === tabSources.length) {
+        setSelectedSourcesNews([])
+      } else {
+        setSelectedSourcesNews(tabSources)
+      }
     } else {
-      setSelectedSources(tabSources)
+      if (selectedSourcesVideos.length === tabSources.length) {
+        setSelectedSourcesVideos([])
+      } else {
+        setSelectedSourcesVideos(tabSources)
+      }
     }
   }
 
