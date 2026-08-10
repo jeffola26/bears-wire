@@ -114,7 +114,7 @@ export default function Home() {
         .from('articles')
         .select('*')
         .order('date_published', { ascending: false })
-        .limit(100)
+        .limit(200)
 
       if (error) throw error
       
