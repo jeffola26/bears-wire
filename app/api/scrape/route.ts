@@ -33,14 +33,19 @@ const RSS_FEEDS: Feed[] = [
   { url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UC4FSSn6ncqmR_mqwsR_IkVQ', contentType: 'video', channelName: '104.3 The Score', filterKeywords: ['bears', 'bear'] },
   { url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UC-W2TmgeL6tEzvtvUU7cptg', contentType: 'video', channelName: 'CHGO Sports', filterKeywords: ['bears', 'bear'] },
   { url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UC3tow0dDpOH8-NlFIb4cBgw', contentType: 'video', channelName: 'ESPN 1000 Chicago', filterKeywords: ['bears', 'bear'] },
-  { url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UC72WUwaRot1Hz3W8ENoOfPQ', contentType: 'video', channelName: 'Waddle and Silvy', filterKeywords: ['bears', 'bear'] },
   { url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UC3X-L84yCBq0XUd1Whe5u7A', contentType: 'video', channelName: 'Up And Adams Show', filterKeywords: ['bears', 'bear'] },
   { url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCC0N8SvRTdBobYO--JJeNjw', contentType: 'video', channelName: 'Barstool Chicago', filterKeywords: ['bears', 'bear'] },
   { url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UC8JCf26FHQIRAcsMioq1cXA', contentType: 'video', channelName: 'Carmen & Jurko', filterKeywords: ['bears', 'bear'] },
-  { url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCZjoOyDDicAfpILdR6G0Sow', contentType: 'video', channelName: 'Kap & J-Hood', filterKeywords: ['bears', 'bear'] },
+  { url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCZjoOyDDicAfpILdR6G0Sow', contentType: 'video', channelName: 'Waddle and Silvy', filterKeywords: ['bears', 'caleb', 'ben johnson'] },
   
   // YouTube TIER 3: "Caleb Williams" keyword filter
   { url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCZvBu8syAHQ1sySTn17VKiQ', contentType: 'video', channelName: 'All Things QB', filterKeywords: ['caleb', 'williams'] },
+  
+  // Additional sports channels with Bears keywords
+  { url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCY69N3lc4zMuXwxrPiUoGeg', contentType: 'video', channelName: 'Rich Eisen Show', filterKeywords: ['bears'] },
+  { url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCiio0ydw439X13KyZgMIcHw', contentType: 'video', channelName: 'ESPN', filterKeywords: ['bears'] },
+  { url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCXn8eue3paGXJyI5UDQIyWg', contentType: 'video', channelName: 'NFL on NBC', filterKeywords: ['bears'] },
+  { url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCrRttZIypNTA1Mrfwo745Sg', contentType: 'video', channelName: 'CBS Sports', filterKeywords: ['bears'] },
 ]
 
 const BEARS_KEYWORDS = ['bear', 'chicago', 'caleb', 'williams', 'nfl', 'offense', 'defense', 'coaches', 'trainer', 'soldier field', 'ben johnson', 'dennis allen', 'ryan poles', 'training camp', 'camp', 'practice', 'injury', 'draft', 'rookie', 'offense', 'defense', 'game', 'season']
