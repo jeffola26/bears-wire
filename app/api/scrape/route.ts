@@ -46,6 +46,7 @@ const RSS_FEEDS: Feed[] = [
   { url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCiio0ydw439X13KyZgMIcHw', contentType: 'video', channelName: 'ESPN', filterKeywords: ['bears'] },
   { url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCXn8eue3paGXJyI5UDQIyWg', contentType: 'video', channelName: 'NFL on NBC', filterKeywords: ['bears'] },
   { url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCrRttZIypNTA1Mrfwo745Sg', contentType: 'video', channelName: 'CBS Sports', filterKeywords: ['bears'] },
+  { url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCSnTko7TBHGlGlA7yvzQVpA', contentType: 'video', channelName: 'Chase Daniel', filterKeywords: ['caleb williams'] },
 ]
 
 const BEARS_KEYWORDS = ['bear', 'chicago', 'caleb', 'williams', 'nfl', 'offense', 'defense', 'coaches', 'trainer', 'soldier field', 'ben johnson', 'dennis allen', 'ryan poles', 'training camp', 'camp', 'practice', 'injury', 'draft', 'rookie', 'offense', 'defense', 'game', 'season']
