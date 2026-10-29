@@ -277,7 +277,7 @@ export default function Home() {
     <div className="relative min-h-screen overflow-x-clip">
       {/* Background light blooms */}
       <div aria-hidden className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
-        <div className="absolute -top-40 -right-20 w-[420px] h-[420px] rounded-full blur-[80px] opacity-35" style={{ background: '#FF6600' }} />
+        <div className="absolute -top-36 -right-28 w-[260px] h-[260px] opacity-20 md:-top-40 md:-right-20 md:w-[420px] md:h-[420px] md:opacity-35 rounded-full blur-[80px]" style={{ background: '#FF6600' }} />
         <div className="absolute top-64 -left-60 w-[500px] h-[500px] rounded-full blur-[80px] opacity-30" style={{ background: '#1e4fd8' }} />
         <div className="absolute -bottom-36 right-[10%] w-[360px] h-[360px] rounded-full blur-[80px] opacity-20" style={{ background: '#c83803' }} />
       </div>
@@ -329,7 +329,7 @@ export default function Home() {
                   <>
                     <span className="hidden sm:block w-1 h-1 rounded-full flex-shrink-0" style={{ background: 'rgba(255,216,191,0.45)' }} />
                     <span className="hidden sm:inline">
-                      Updated
+                      Updated{' '}
                       <span className="font-semibold text-white">{timeAgo(lastUpdated)}</span>
                     </span>
                   </>
