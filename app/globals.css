@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #060b16;
+  --foreground: #e8ecf5;
 }
 
 @theme inline {
@@ -10,17 +10,36 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --font-condensed: var(--font-barlow-condensed);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+}
+
+@layer components {
+  /* Midnight Glass surfaces */
+  .glass {
+    background: rgba(255, 255, 255, 0.045);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .glass-strong {
+    background: rgba(13, 20, 36, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .orange-gradient {
+    background: linear-gradient(135deg, #FF6600, #e04e00);
+  }
+
+  @keyframes wire-pulse {
+    50% { opacity: 0.25; }
+  }
+
+  .wire-dot {
+    animation: wire-pulse 1.4s infinite;
+  }
 }
