@@ -18,7 +18,6 @@ const RSS_FEEDS: Feed[] = [
   { url: 'https://www.chicagobears.com/rss/news', contentType: 'news' },
   { url: 'https://www.windycitygridiron.com/rss/index.xml', contentType: 'news', descriptionField: 'content:encoded' },
   { url: 'http://bearingthenews.com/feed/', contentType: 'news' },
-  { url: 'https://www.reddit.com/r/chibears/.rss', contentType: 'news' },
   { url: 'https://beargoggleson.com/feed/', contentType: 'news' },
   { url: 'https://bleachernation.com/bears/feed', contentType: 'news' },
   
@@ -149,58 +148,6 @@ function extractImageFromRSSItem(item: any, url: string): string | null {
   return null
 }
 
-// Reddit blocks unauthenticated RSS from cloud hosts (returns 404/403/429),
-// so subreddit feeds go through Reddit's OAuth API with app-only credentials.
-const REDDIT_USER_AGENT = process.env.REDDIT_USER_AGENT || 'web:bearswire:v1.0'
-
-async function getRedditToken(): Promise<string> {
-  const clientId = process.env.REDDIT_CLIENT_ID
-  const clientSecret = process.env.REDDIT_CLIENT_SECRET
-  if (!clientId || !clientSecret) {
-    throw new Error('REDDIT_CLIENT_ID / REDDIT_CLIENT_SECRET not set')
-  }
-  const res = await fetch('https://www.reddit.com/api/v1/access_token', {
-    method: 'POST',
-    headers: {
-      Authorization: `Basic ${Buffer.from(`${clientId}:${clientSecret}`).toString('base64')}`,
-      'Content-Type': 'application/x-www-form-urlencoded',
-      'User-Agent': REDDIT_USER_AGENT,
-    },
-    body: 'grant_type=client_credentials',
-    cache: 'no-store',
-  })
-  if (!res.ok) throw new Error(`Reddit token request failed: ${res.status}`)
-  const data = await res.json()
-  if (!data.access_token) throw new Error('Reddit token response missing access_token')
-  return data.access_token
-}
-
-// Returns items shaped like rss-parser items so the normal pipeline handles them
-async function fetchRedditFeed(feedUrl: string): Promise<{ items: any[] }> {
-  const match = feedUrl.match(/reddit\.com\/r\/([^/]+)/i)
-  if (!match) throw new Error(`Can't find subreddit in ${feedUrl}`)
-  const token = await getRedditToken()
-  const res = await fetch(`https://oauth.reddit.com/r/${match[1]}/new?limit=50&raw_json=1`, {
-    headers: { Authorization: `Bearer ${token}`, 'User-Agent': REDDIT_USER_AGENT },
-    cache: 'no-store',
-  })
-  if (!res.ok) throw new Error(`Reddit API request failed: ${res.status}`)
-  const data = await res.json()
-  const items = (data?.data?.children || [])
-    .map((child: any) => child.data)
-    .filter((post: any) => post?.title && post?.permalink)
-    .map((post: any) => ({
-      title: post.title,
-      link: `https://www.reddit.com${post.permalink}`,
-      contentSnippet: (post.selftext || '').substring(0, 300),
-      pubDate: new Date(post.created_utc * 1000).toISOString(),
-      // The page always renders Reddit posts with this image; setting it keeps
-      // them out of the OG-image backfill queue (Reddit pages block that too)
-      enclosure: { url: '/bears-reddit.png' },
-    }))
-  return { items }
-}
-
 function cleanDescription(html: string): string {
   // Strip HTML tags
   let text = html.replace(/<[^>]*>/g, '')
@@ -249,9 +196,7 @@ export async function GET() {
         logs.push(`Fetching ${feed.contentType} feed: ${feed.url}`)
         console.log(`Fetching ${feed.contentType} feed: ${feed.url}`)
         
-        const parsedFeed = feed.url.includes('reddit.com')
-          ? await fetchRedditFeed(feed.url)
-          : await parser.parseURL(feed.url)
+        const parsedFeed = await parser.parseURL(feed.url)
         logs.push(`Feed parsed. Items count: ${parsedFeed.items.length}`)
         console.log(`Feed parsed. Items: ${parsedFeed.items.length}`)
 
@@ -291,7 +236,6 @@ export async function GET() {
 
           // Apply filtering based on feed type
           const isOfficialBears = feed.url.includes('chicagobears.com')
-          const isReddit = feed.url.includes('reddit.com')
           const isYouTube = feed.url.includes('youtube.com')
           
           if (isYouTube) {
@@ -300,8 +244,8 @@ export async function GET() {
               logs.push(`Filtered out (doesn't match keywords): ${title}`)
               continue
             }
-          } else if (!isOfficialBears && !isReddit) {
-            // News feeds require Bears-related keywords (except official and Reddit)
+          } else if (!isOfficialBears) {
+            // News feeds require Bears-related keywords (except official)
             if (!isBearRelated(title, description)) {
               logs.push(`Filtered out (not Bears-related): ${title}`)
               continue
