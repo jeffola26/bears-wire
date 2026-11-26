@@ -6,7 +6,8 @@
 [functions]
   directory = "netlify/functions"
 
-# Scheduled function for scraping articles every 15 minutes (9am-5pm Chicago = 3pm-11pm UTC)
+# Scheduled scrape: fires every 15 minutes; the function itself decides whether to run
+# (every 15 min 9am-5pm Chicago time, top of the hour otherwise). See netlify/functions/scheduled-scrape.ts
 [[scheduled_functions]]
   function = "scheduled-scrape"
-  cron = "0,15,30,45 15-23 * * *"
+  cron = "*/15 * * * *"

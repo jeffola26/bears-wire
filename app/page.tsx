@@ -26,10 +26,6 @@ function getPlaceholder(id: string): string {
   return PLACEHOLDERS[hash % PLACEHOLDERS.length]
 }
 
-function isRedditPost(source: string): boolean {
-  return source.includes('reddit.com')
-}
-
 function decodeHTMLEntities(str: string): string {
   const textarea = document.createElement('textarea')
   textarea.innerHTML = str
@@ -175,6 +171,7 @@ export default function Home() {
       const { data, error } = await supabase
         .from('articles')
         .select('*')
+        .not('source', 'ilike', '%reddit.com%')
         .order('date_published', { ascending: false })
         .limit(200)
 
@@ -451,8 +448,7 @@ export default function Home() {
                 </h2>
                 <div className="flex flex-col gap-1.5">
                   {group.articles.map((article) => {
-                    const reddit = isRedditPost(article.source)
-                    const imageUrl = reddit ? '/bears-reddit.png' : (article.thumbnail || getPlaceholder(article.id))
+                    const imageUrl = article.thumbnail || getPlaceholder(article.id)
 
                     return (
                       <a
