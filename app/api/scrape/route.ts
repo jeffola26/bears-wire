@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import Parser from 'rss-parser'
 import { supabase } from '@/lib/supabase'
+import { setLastScrape } from '@/lib/scrape-status'
 
 const parser = new Parser()
 
@@ -17,6 +18,7 @@ const RSS_FEEDS: Feed[] = [
   { url: 'https://www.chicagobears.com/rss/news', contentType: 'news' },
   { url: 'https://www.windycitygridiron.com/rss/index.xml', contentType: 'news', descriptionField: 'content:encoded' },
   { url: 'http://bearingthenews.com/feed/', contentType: 'news' },
+  { url: 'https://www.reddit.com/r/chibears/.rss', contentType: 'news' },
   { url: 'https://beargoggleson.com/feed/', contentType: 'news' },
   { url: 'https://bleachernation.com/bears/feed', contentType: 'news' },
   
@@ -235,6 +237,7 @@ export async function GET() {
 
           // Apply filtering based on feed type
           const isOfficialBears = feed.url.includes('chicagobears.com')
+          const isReddit = feed.url.includes('reddit.com')
           const isYouTube = feed.url.includes('youtube.com')
           
           if (isYouTube) {
@@ -243,8 +246,8 @@ export async function GET() {
               logs.push(`Filtered out (doesn't match keywords): ${title}`)
               continue
             }
-          } else if (!isOfficialBears) {
-            // News feeds require Bears-related keywords (except official)
+          } else if (!isOfficialBears && !isReddit) {
+            // News feeds require Bears-related keywords (except official and Reddit)
             if (!isBearRelated(title, description)) {
               logs.push(`Filtered out (not Bears-related): ${title}`)
               continue
@@ -301,11 +304,18 @@ export async function GET() {
     logs.push(`Scrape complete. Added: ${addedCount}, Skipped: ${skippedCount}`)
     console.log(logs.join('\n'))
 
+    const timestamp = new Date().toISOString()
+    try {
+      await setLastScrape({ timestamp, added: addedCount, skipped: skippedCount })
+    } catch (error) {
+      console.error('Failed to record last scrape time:', error)
+    }
+
     return NextResponse.json({
       success: true,
       added: addedCount,
       skipped: skippedCount,
-      timestamp: new Date().toISOString(),
+      timestamp,
       logs,
     })
   } catch (error) {

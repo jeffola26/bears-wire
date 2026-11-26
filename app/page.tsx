@@ -26,6 +26,10 @@ function getPlaceholder(id: string): string {
   return PLACEHOLDERS[hash % PLACEHOLDERS.length]
 }
 
+function isRedditPost(source: string): boolean {
+  return source.includes('reddit.com')
+}
+
 function decodeHTMLEntities(str: string): string {
   const textarea = document.createElement('textarea')
   textarea.innerHTML = str
@@ -81,6 +85,7 @@ export default function Home() {
   const [showSourceFilter, setShowSourceFilter] = useState(false)
   const [lastVisit, setLastVisit] = useState<number | null>(null)
   const [record, setRecord] = useState<string | null>(null)
+  const [lastScrape, setLastScrape] = useState<number | null>(null)
   const isInitialMount = useRef(true)
   const visitRecorded = useRef(false)
   const stickyAnchor = useRef<HTMLDivElement>(null)
@@ -92,6 +97,7 @@ export default function Home() {
   useEffect(() => {
     fetchArticles()
     fetchRecord()
+    fetchLastScrape()
   }, [])
 
   // Track when the tab bar is stuck to the top of the screen
@@ -171,7 +177,6 @@ export default function Home() {
       const { data, error } = await supabase
         .from('articles')
         .select('*')
-        .not('source', 'ilike', '%reddit.com%')
         .order('date_published', { ascending: false })
         .limit(200)
 
@@ -187,6 +192,17 @@ export default function Home() {
       console.error('Error fetching articles:', error)
     } finally {
       setLoading(false)
+    }
+  }
+
+  async function fetchLastScrape() {
+    try {
+      const response = await fetch('/api/last-scrape')
+      const data = await response.json()
+      const ts = data.lastScrape?.timestamp ? new Date(data.lastScrape.timestamp).getTime() : null
+      setLastScrape(ts)
+    } catch (error) {
+      console.error('Error fetching last scrape:', error)
     }
   }
 
@@ -231,7 +247,8 @@ export default function Home() {
   const newCount = lastVisit !== null
     ? articles.filter(isNew).length
     : articles.filter(a => dayLabel(new Date(a.date_published)) === 'Today').length
-  const lastUpdated = articles.length > 0 ? Math.max(...articles.map(addedAt)) : null
+  // Prefer the time of the last scrape run; fall back to the newest article if unavailable
+  const lastUpdated = lastScrape ?? (articles.length > 0 ? Math.max(...articles.map(addedAt)) : null)
 
   const tabConfig = [
     { id: 'news', label: 'News' },
@@ -448,7 +465,8 @@ export default function Home() {
                 </h2>
                 <div className="flex flex-col gap-1.5">
                   {group.articles.map((article) => {
-                    const imageUrl = article.thumbnail || getPlaceholder(article.id)
+                    const reddit = isRedditPost(article.source)
+                    const imageUrl = reddit ? '/bears-reddit.png' : (article.thumbnail || getPlaceholder(article.id))
 
                     return (
                       <a
